@@ -1,0 +1,18 @@
+import os
+import arcpy
+
+arcpy.env.workspace="C:\Users\snelson\AppData\Roaming\ESRI\Desktop10.3\ArcCatalog\MTA spatial data store - 1_ADMIN.sde"
+
+def listMTAfcs(gdb):
+	fcs =[]
+	for fds in arcpy.ListDatasets('','feature')+['']:
+		for fc in arcpy.ListFeatureClasses('','',fds):
+			fcs.append(os.path.join(fds,fc))
+	return fcs
+
+fcs = listMTAfcs(arcpy.env.workspace)
+
+for fc in fcs:
+	print fc
+	
+	
