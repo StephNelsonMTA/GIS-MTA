@@ -15,4 +15,4 @@ fcs = listMTAfcs(arcpy.env.workspace)
 for fc in fcs:
 	fcFields=arcpy.ListFields(fc)
 	for fld in fcFields:
-		print fld.name
+		print (os.path.join(fc,fld.name))
