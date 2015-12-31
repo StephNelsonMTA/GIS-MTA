@@ -1,0 +1,45 @@
+from bs4 import BeautifulSoup
+import arcpy
+import arcpy_metadata as md
+import os
+import ast
+from itertools import chain
+
+
+sde = "C:\Users\snelson\AppData\Roaming\ESRI\Desktop10.3\ArcCatalog\MTA spatial data store - 1_ADMIN.sde"
+arcpy.env.workspace = sde
+
+
+# Create a function that will list all feature classes, attributes, and attribute descriptions from the metadata of each feature class. 
+# This function only includes attributes listed in the metadata description field per MTA metadata standards.
+
+def listMTAfcs(gdb):
+
+    # Create list of all feature classes in the data store
+    
+    fcs =[]
+    for fds in arcpy.ListDatasets('','feature')+['']:
+        for fc in arcpy.ListFeatureClasses('','',fds):
+            fcs.append(os.path.join(fds,fc))
+    fcs.sort()
+
+    # Create list of all attributes of all feature classes in the data store
+
+    for fc in fcs:
+
+        # Extract the metadata
+
+        fcPath = os.path.join(sde,fc)
+        metadata = md.MetadataEditor(fcPath)
+        descRaw = metadata.abstract.get()
+        soup = BeautifulSoup(descRaw,'html.parser')
+        desc = soup.get_text()
+
+        # Extract the attribute descriptions from the metadata and create a clean list of attribute descriptions for each
+        
+        attributePile = desc.split("Attributes:")[1]
+        for eachAtt in attributePile.split(';'):
+            print os.path.join(fc,eachAtt)
+
+
+listMTAfcs(sde)
